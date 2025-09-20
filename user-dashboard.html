@@ -1,0 +1,3491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKELA AI - Advanced Lottery Prediction System</title>
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --primary-light: #6b8cff;
+            --primary-dark: #3a5bef;
+            --secondary: #ff6b6b;
+            --secondary-light: #ff8e8e;
+            --secondary-dark: #e04f4f;
+            --dark: #1e293b;
+            --dark-light: #334155;
+            --light: #f8fafc;
+            --light-dark: #e2e8f0;
+            --success: #10b981;
+            --success-light: #34d399;
+            --warning: #f59e0b;
+            --warning-light: #fbbf24;
+            --danger: #ef4444;
+            --danger-light: #f87171;
+            --info: #3b82f6;
+            --info-light: #60a5fa;
+            --gray: #94a3b8;
+            --gray-light: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .main-interface {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .splash-content h1 {
+            font-size: 3.5rem;
+            color: var(--primary);
+        }
+
+        .splash-content p {
+            font-size: 1.2rem;
+            color: var(--dark-light);
+            margin-top: 10px;
+        }
+
+        .splash-screen .btn {
+            font-size: 1.5rem;
+            padding: 15px 40px;
+            margin-top: 25px;
+            border-radius: 50px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 3.2rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            margin-top: 15px;
+            font-weight: 400;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+
+        .card-title {
+            font-size: 1.6rem;
+            margin: 0 0 20px 0;
+            color: var(--primary);
+            border-bottom: 2px solid var(--light-dark);
+            padding-bottom: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header-with-button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--light-dark);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card-header-with-button .card-title {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+
+        .card-actions .btn {
+            font-size: 0.9rem;
+            padding: 8px 15px;
+        }
+
+        .card-actions .btn i {
+            font-size: 0.9rem;
+        }
+
+        .card-title i {
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .prediction-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--light-dark);
+            transition: all 0.3s ease;
+        }
+
+        .prediction-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .prediction-label {
+            font-size: 1.1rem;
+            color: var(--dark-light);
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .prediction-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 5px 0;
+            text-align: center;
+        }
+
+        .confidence {
+            font-size: 1rem;
+            color: var(--success);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .confidence i {
+            margin-right: 5px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            margin: 25px 0;
+            overflow: hidden;
+            height: 24px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar.blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0.6; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--light-dark);
+            position: relative;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 15px 0;
+            color: var(--primary);
+            position: relative;
+        }
+
+        .stat-value::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--light-dark);
+            border-radius: 3px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-top: 15px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        #prediction-history td, #fetched-data-table td {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        #prediction-history td:first-child,
+        #prediction-history td:last-child,
+        #fetched-data-table td:first-child {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .tab-container {
+            margin-bottom: 25px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--light-dark);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--gray);
+            white-space: nowrap;
+        }
+
+        .tab i {
+            margin-right: 8px;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .tab:hover:not(.active) {
+            color: var(--dark);
+            background-color: rgba(74, 107, 255, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .notification {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            padding: 15px 20px;
+            background-color: var(--success);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transform: translateX(200%);
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background-color: var(--danger);
+        }
+
+        .notification.warning {
+            background-color: var(--warning);
+        }
+
+        .notification.info {
+            background-color: var(--info);
+        }
+
+        .notification i {
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+
+        .telegram-logo {
+            font-size: 3.5rem;
+            color: #0088cc;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .auto-prediction-title {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .telegram-settings-box {
+            background-color: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--light-dark);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--light-dark);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-dark);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--gray);
+        }
+
+        .help-center-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(18, 140, 126, 0.3);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            font-size: 1.8rem;
+        }
+
+        .help-center-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .scheduled-messages {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-dark);
+        }
+
+        .scheduled-messages h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .time-slot {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .sticker-uploads {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-dark);
+        }
+
+        .sticker-uploads h3 {
+            margin-bottom: 15px;
+            color: var(--dark-light);
+        }
+
+        .sticker-category {
+            margin-bottom: 20px;
+        }
+
+        .sticker-category h4 {
+            margin-bottom: 10px;
+            color: var(--dark-light);
+        }
+
+        .sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .sticker-grid input[type="file"] {
+            padding: 5px;
+            border: 1px dashed var(--gray-light);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .sticker-uploads .btn {
+            margin-top: 20px;
+        }
+
+        .sticker-note {
+            font-size: 0.9em;
+            color: var(--gray);
+            margin-bottom: 15px;
+            padding-left: 5px;
+            border-left: 3px solid var(--warning);
+        }
+
+        .last-updated {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 10px;
+        }
+
+        .last-updated i {
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+
+        .refresh-btn {
+            background-color: var(--info);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background-color: var(--info-light);
+            transform: translateY(-2px);
+        }
+
+        .session-stats-popup {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 250px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            transform: translateX(300px);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            padding: 15px;
+            cursor: move;
+        }
+
+        .session-stats-popup.show {
+            transform: translateX(0);
+        }
+
+        .popup-header {
+            border-bottom: 1px solid var(--light-dark);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .popup-header h4 {
+            margin: 0;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .popup-header h4 i {
+            margin-right: 8px;
+            font-size: 0.9rem;
+        }
+
+        .popup-close {
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--gray);
+        }
+
+        .popup-content .stat-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 5px 0;
+        }
+
+        .win-text {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .loss-text {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .manual-prediction-note {
+            font-size: 0.9em;
+            color: var(--gray);
+            margin-bottom: 20px;
+            padding-left: 5px;
+            border-left: 3px solid var(--info);
+        }
+
+        .manual-session-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sub-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--light-dark);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .sub-tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--gray);
+            white-space: nowrap;
+        }
+
+        .sub-tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .sub-tab:hover:not(.active) {
+            color: var(--dark);
+            background-color: rgba(74, 107, 255, 0.05);
+        }
+
+        .sub-tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .sub-tab-content.active {
+            display: block;
+        }
+
+        .info-note {
+            font-size: 0.9em;
+            color: var(--gray);
+            margin-bottom: 15px;
+            padding-left: 5px;
+            border-left: 3px solid var(--info);
+        }
+
+        .time-slots-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .time-slot-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mt-3 {
+            margin-top: 1.5rem;
+        }
+
+        /* Additional styling for the new template section */
+        .template-preview {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        .template-variables {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .template-variables code {
+            background-color: #e9ecef;
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 0 2px;
+        }
+
+        .sticker-settings {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-dark);
+        }
+
+        .sticker-settings h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .sticker-ids-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .sticker-category {
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--light-dark);
+        }
+
+        .sticker-category h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sticker-category h4 i {
+            font-size: 1.2rem;
+        }
+
+        .sticker-id-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .sticker-id-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background-color: white;
+            border-radius: 6px;
+            border: 1px solid var(--light-dark);
+        }
+
+        .sticker-id-item span {
+            font-weight: 500;
+            min-width: 20px;
+        }
+
+        .sticker-id-item input {
+            flex: 1;
+            padding: 5px 10px;
+            border: 1px solid var(--light-dark);
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Session Stickers Tab Styles */
+        .session-stickers-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .session-sticker-category {
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--light-dark);
+        }
+
+        .session-sticker-category h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .session-sticker-category h4 i {
+            font-size: 1.2rem;
+        }
+
+        .session-sticker-id-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .session-sticker-id-item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 8px;
+            background-color: white;
+            border-radius: 6px;
+            border: 1px solid var(--light-dark);
+        }
+
+        .session-sticker-id-item label {
+            font-weight: 500;
+        }
+
+        .session-sticker-id-item input {
+            padding: 5px 10px;
+            border: 1px solid var(--light-dark);
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .session-content-item {
+            margin-top: 20px;
+        }
+
+        .session-content-item textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Server Tab Styles */
+        .calculation-mode-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .mode-option {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid var(--light-dark);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-option.active {
+            border-color: var(--primary);
+            background-color: rgba(74, 107, 255, 0.1);
+        }
+
+        .mode-option h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .mode-option p {
+            color: var(--dark-light);
+            font-size: 0.9rem;
+        }
+
+        .mode-description {
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .mode-description h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .mode-description ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .mode-description li {
+            margin-bottom: 5px;
+        }
+
+        /* Photo Upload Styles */
+        .photo-upload-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .photo-upload-item {
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--light-dark);
+        }
+
+        .photo-upload-item h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .photo-upload-item h4 i {
+            font-size: 1.2rem;
+        }
+
+        .photo-preview {
+            width: 100%;
+            height: 150px;
+            background-color: #e2e8f0;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .photo-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .upload-btn {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.2rem;
+            }
+
+            header {
+                padding: 30px 0;
+                min-height: 150px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .prediction-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .telegram-settings-box {
+                padding: 20px;
+            }
+
+            .time-slot {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 8px 10px;
+                max-width: 100px;
+            }
+
+            .last-updated {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .sticker-ids-container, .session-stickers-container {
+                grid-template-columns: 1fr;
+            }
+
+            .calculation-mode-selector {
+                flex-direction: column;
+            }
+
+            .photo-upload-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-interface {
+                padding: 10px;
+            }
+
+            header {
+                padding: 20px 0;
+                min-height: 130px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .prediction-item {
+                padding: 15px;
+            }
+
+            .prediction-value {
+                font-size: 1.8rem;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            th, td {
+                padding: 6px 8px;
+                font-size: 0.7rem;
+                max-width: 80px;
+            }
+
+            .splash-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .splash-content p {
+                font-size: 1rem;
+            }
+
+            .splash-screen .btn {
+                font-size: 1.2rem;
+                padding: 10px 30px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="main-interface" id="main-content">
+        <header>
+            <h1><i class="fas fa-robot"></i> AKELA AI</h1>
+            <div class="subtitle">Advanced Lottery Prediction & Analysis System</div>
+        </header>
+        
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </div>
+                <div class="tab" data-tab="predictions">
+                    <i class="fas fa-chart-line"></i> Predictions
+                </div>
+                <div class="tab" data-tab="analysis">
+                    <i class="fas fa-database"></i> Fetched Data
+                </div>
+                <div class="tab" data-tab="server">
+                    <i class="fas fa-server"></i> Server
+                </div>
+                <div class="tab" data-tab="auto-session">
+                    <i class="fas fa-bolt"></i> Auto Session
+                </div>
+                <div class="tab" data-tab="auto-timing">
+                    <i class="fas fa-clock"></i> Auto Timing
+                </div>
+                <div class="tab" data-tab="scheduled-messages">
+                    <i class="fas fa-calendar-alt"></i> Scheduled Messages
+                </div>
+                <div class="tab" data-tab="manual-prediction">
+                    <i class="fas fa-hand-pointer"></i> Manual Prediction
+                </div>
+                <div class="tab" data-tab="sticker-settings">
+                    <i class="fas fa-smile"></i> Sticker Settings
+                </div>
+                <div class="tab" data-tab="session-stickers">
+                    <i class="fas fa-images"></i> Session Stickers
+                </div>
+            </div>
+            
+            <div class="tab-content active" id="dashboard">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-bullseye"></i> Current Prediction
+                    </h2>
+                    <div class="prediction-grid">
+                        <div class="prediction-item">
+                            <div class="prediction-label">Next Draw Period</div>
+                            <div class="prediction-value" id="next-period">--</div>
+                            <div class="confidence">
+                                <i class="fas fa-clock"></i> Upcoming
+                            </div>
+                        </div>
+                        <div class="prediction-item">
+                            <div class="prediction-label">Number Prediction</div>
+                            <div class="prediction-value" id="number-pred">--</div>
+                            <div class="confidence" id="number-confidence">
+                                <i class="fas fa-info-circle"></i> Loading...
+                            </div>
+                        </div>
+                        <div class="prediction-item">
+                            <div class="prediction-label">Size Prediction</div>
+                            <div class="prediction-value" id="size-pred">--</div>
+                            <div class="confidence" id="size-confidence">
+                                <i class="fas fa-info-circle"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar" style="width: 0%">Updating in 60s</div>
+                    </div>
+                    
+                    <div class="last-updated">
+                        <i class="fas fa-sync-alt"></i>
+                        <span id="last-updated">Last updated: --</span>
+                        <button id="refresh-btn" class="refresh-btn">
+                            <i class="fas fa-redo-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Number Prediction Accuracy</div>
+                        <div class="stat-value" id="num-accuracy">--%</div>
+                        <div id="num-streak">Current streak: --</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Size Prediction Accuracy</div>
+                        <div class="stat-value" id="size-accuracy">--%</div>
+                        <div id="size-streak">Current streak: --</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Predictions</div>
+                        <div class="stat-value" id="total-predictions">--</div>
+                        <div id="win-rate">Win rate: --%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Average Error</div>
+                        <div class="stat-value" id="avg-error">--</div>
+                        <div id="error-trend">Trend: --</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="predictions">
+                <div class="card">
+                    <div class="card-header-with-button">
+                        <h2 class="card-title">
+                            <i class="fas fa-database"></i> Prediction History
+                        </h2>
+                        <div class="card-actions">
+                            <button class="btn btn-danger" id="clear-predictions-btn">
+                                <i class="fas fa-trash"></i> Clear Data
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="prediction-history">
+                            <thead>
+                                <tr>
+                                    <th>Period</th>
+                                    <th>Number Pred</th>
+                                    <th>Size Pred</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="analysis">
+                <div class="card">
+                    <div class="card-header-with-button">
+                        <h2 class="card-title">
+                            <i class="fas fa-table"></i> Fetched Data
+                        </h2>
+                        <div class="card-actions">
+                            <button class="btn btn-danger" id="clear-fetched-btn">
+                                <i class="fas fa-trash"></i> Clear Data
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="fetched-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Period</th>
+                                    <th>Number</th>
+                                    <th>Size</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Server Tab -->
+            <div class="tab-content" id="server">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-server"></i> Server Settings
+                    </h2>
+                    <div class="telegram-settings-box">
+                        <div class="calculation-mode-selector">
+                            <div class="mode-option active" data-mode="sasta">
+                                <h3><i class="fas fa-bolt"></i> Sasta Calculation</h3>
+                                <p>Current pattern-based prediction system</p>
+                            </div>
+                            <div class="mode-option" data-mode="deep">
+                                <h3><i class="fas fa-brain"></i> Deep Calculation</h3>
+                                <p>Advanced high-accuracy prediction system</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mode-description" id="sasta-description">
+                            <h4>Sasta Calculation Mode</h4>
+                            <p>This mode uses pattern recognition algorithms to predict outcomes:</p>
+                            <ul>
+                                <li>Analyzes 5-7 digit patterns for predictions</li>
+                                <li>Fast processing with moderate accuracy</li>
+                                <li>Good for general use with limited data</li>
+                            </ul>
+                            <p><strong>Status:</strong> <span id="sasta-status">Active</span></p>
+                        </div>
+                        
+                        <div class="mode-description" id="deep-description" style="display: none;">
+                            <h4>Deep Calculation Mode</h4>
+                            <p>This mode uses advanced algorithms for high-accuracy predictions:</p>
+                            <ul>
+                                <li>Instant high-accuracy pattern detection</li>
+                                <li>Multiple pattern length analysis (3-5 digits)</li>
+                                <li>Trend analysis and momentum detection</li>
+                                <li>Smart prediction with multiple factors</li>
+                            </ul>
+                            <p><strong>Status:</strong> <span id="deep-status">Inactive</span></p>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <button type="button" id="save-calculation-mode" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Calculation Mode
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="auto-session">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fab fa-telegram"></i> Auto Prediction Session
+                    </h2>
+                    <div class="telegram-settings-box">
+                        <div class="form-group">
+                            <label class="form-label">Bot Token</label>
+                            <input type="text" class="form-control" id="bot-token" placeholder="Enter your bot token">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Channel ID</label>
+                            <input type="text" class="form-control" id="channel-id" placeholder="Enter your channel ID">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Automatic Session End (after X wins)</label>
+                            <input type="number" class="form-control" id="session-end-count" value="10" min="1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Prediction Message Template</label>
+                            <textarea class="form-control" id="message-template" rows="3">PERIOD ➪ {issueNumber}\nRESULT ➪ {size} / {number}</textarea>
+                            <div class="template-variables">
+                                Available variables: <code>{issueNumber}</code> <code>{size}</code> <code>{number}</code>
+                            </div>
+                            <div class="template-preview" id="template-preview">
+                                Preview will appear here
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="button" id="save-telegram-settings" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Settings
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="button" id="session-toggle" class="btn btn-secondary">
+                                <i class="fas fa-play"></i> Start Auto Session
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="auto-timing">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-clock"></i> Auto Timing Sessions
+                    </h2>
+                    <div class="telegram-settings-box">
+                        <p class="info-note">Set specific times for automatic prediction sessions to start.</p>
+                        <div class="time-slots-container">
+                            <div class="time-slot-item">
+                                <label class="form-label">Session 1</label>
+                                <input type="time" class="form-control timing-time-input" id="timing-time-1" value="09:00">
+                            </div>
+                            <div class="time-slot-item">
+                                <label class="form-label">Session 2</label>
+                                <input type="time" class="form-control timing-time-input" id="timing-time-2" value="12:00">
+                            </div>
+                            <div class="time-slot-item">
+                                <label class="form-label">Session 3</label>
+                                <input type="time" class="form-control timing-time-input" id="timing-time-3" value="15:00">
+                            </div>
+                            <div class="time-slot-item">
+                                <label class="form-label">Session 4</label>
+                                <input type="time" class="form-control timing-time-input" id="timing-time-4" value="18:00">
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <button type="button" id="toggle-timing-sessions" class="btn btn-primary">
+                                <i class="fas fa-clock"></i> Start Timing Sessions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="scheduled-messages">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-calendar-alt"></i> Scheduled Messages
+                    </h2>
+                    <div class="telegram-settings-box">
+                        <p class="info-note">Schedule messages to be sent to your Telegram channel at specific times.</p>
+                        <div class="time-slots">
+                            <div class="time-slot">
+                                <div class="form-group">
+                                    <label>Time</label>
+                                    <input type="time" class="form-control scheduled-time" id="scheduled-time-1" value="17:00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea class="form-control scheduled-message" id="scheduled-message-1" placeholder="Message for this time"></textarea>
+                                </div>
+                            </div>
+                            <div class="time-slot">
+                                <div class="form-group">
+                                    <label>Time</label>
+                                    <input type="time" class="form-control scheduled-time" id="scheduled-time-2" value="20:00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea class="form-control scheduled-message" id="scheduled-message-2" placeholder="Message for this time"></textarea>
+                                </div>
+                            </div>
+                            <div class="time-slot">
+                                <div class="form-group">
+                                    <label>Time</label>
+                                    <input type="time" class="form-control scheduled-time" id="scheduled-time-3" value="23:00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea class="form-control scheduled-message" id="scheduled-message-3" placeholder="Message for this time"></textarea>
+                                </div>
+                            </div>
+                            <div class="time-slot">
+                                <div class="form-group">
+                                    <label>Time</label>
+                                    <input type="time" class="form-control scheduled-time" id="scheduled-time-4" value="00:00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea class="form-control scheduled-message" id="scheduled-message-4" placeholder="Message for this time"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <button type="button" id="toggle-scheduled-btn" class="btn btn-primary">
+                                <i class="fas fa-clock"></i> Start Scheduled Messages
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="manual-prediction">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fab fa-telegram"></i> Manual Prediction
+                    </h2>
+                    <div class="telegram-settings-box">
+                        <div class="manual-session-controls">
+                            <button type="button" id="manual-session-start" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Session Start
+                            </button>
+                            <button type="button" id="manual-session-end" class="btn btn-danger" style="display: none;">
+                                <i class="fas fa-stop"></i> Session End
+                            </button>
+                        </div>
+                        
+                        <!-- Manual Prediction Message Template -->
+                        <div class="form-group">
+                            <label class="form-label">Manual Prediction Message Template</label>
+                            <textarea class="form-control" id="manual-message-template" rows="3">PERIOD ➪ {issueNumber}\nRESULT ➪ {size} / {number}</textarea>
+                            <div class="template-variables">
+                                Available variables: <code>{issueNumber}</code> <code>{size}</code> <code>{number}</code>
+                            </div>
+                            <div class="template-preview" id="manual-template-preview">
+                                Preview will appear here
+                            </div>
+                        </div>
+                        
+                        <div class="session-info" id="manual-session-info" style="display: none;">
+                            <div class="progress-container">
+                                <div class="progress-bar" id="manual-progress-bar" style="width: 0%">Updating in 60s</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Current Period Number</label>
+                                <input type="text" class="form-control" id="manual-period" placeholder="Loading..." readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Size Prediction</label>
+                                <select class="form-control" id="manual-size-pred">
+                                    <option value="">-Select Size-</option>
+                                    <option value="BIG">BIG</option>
+                                    <option value="SMALL">SMALL</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Number Prediction (0-9)</label>
+                                <input type="number" class="form-control" id="manual-number-pred" min="0" max="9" placeholder="Enter a number (0-9)">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" id="submit-manual-prediction" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Submit Prediction
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="sticker-settings">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-smile"></i> Sticker Settings
+                    </h2>
+                    <div class="sticker-settings">
+                        <p class="info-note">Configure sticker IDs for different outcomes. On win, the system will send one animation sticker followed by one video sticker. On loss, it will send the loss sticker.</p>
+                        
+                        <div class="sticker-ids-container">
+                            <div class="sticker-category">
+                                <h4><i class="fas fa-film"></i> Animation Stickers</h4>
+                                <div class="sticker-id-list">
+                                    <div class="sticker-id-item">
+                                        <span>1</span>
+                                        <input type="text" class="form-control animation-sticker" id="animation-sticker-1" value="CAACAgUAAxkBAAEGwshovqkrb8XpSFTh2yArrjlEICuKfAACYxAAAh91GVc3ptodpS_zpx4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>2</span>
+                                        <input type="text" class="form-control animation-sticker" id="animation-sticker-2" value="CAACAgUAAxkBAAEC_AtoyiKk6BpoB6j_IA3gUqnB6JsaVwAC5g4AAkXf6FdoCMHqXadTCB4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>3</span>
+                                        <input type="text" class="form-control animation-sticker" id="animation-sticker-3" value="CAACAgUAAxkBAAEC_A5oyiLKVzj8gO5NCKzoEU8flARuMAAC8RIAAo7VgFQ2DpiQuB_pVB4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>4</span>
+                                        <input type="text" class="form-control animation-sticker" id="animation-sticker-4" value="CAACAgUAAxkBAAEC_A9oyiLc7etpPaYJk3ej_93ewb-h7QAC0hcAAsPycVSffCbGo2_kcB4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>5</span>
+                                        <input type="text" class="form-control animation-sticker" id="animation-sticker-5" value="CAACAgUAAxkBAAEC_BBoyiMvuzhC-LJnENEztR63ZmNf2QACJxAAAoQ06Vfrak_IqecfsR4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>6</span>
+                                        <input type="text" class="form-control animation-sticker" id="animation-sticker-6" value="CAACAgUAAxkBAAEC_BFoyiM0M623xTON7FmX-xpUcIx_WQACuxYAAhtEcVU_4HGdOiVh9x4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>7</span>
+                                        <input type="text" class="form-control animation-sticker" id="animation-sticker-7" value="CAACAgUAAxkBAAEC_BRoyiNtS_7FGLJZYyHsqnbeBMFZYAACpBMAAkzjgFfWSWdLXPRF3R4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>8</span>
+                                        <input type="text" class="form-control animation-sticker" id="animation-sticker-8" value="CAACAgUAAxkBAAEC_BZoyiOV0s2NaQScOHATdx0kcFfc7AACXhYAAnij-VVjmTZNEK5CPh4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>9</span>
+                                        <input type="text" class="form-control animation-sticker" id="animation-sticker-9" value="CAACAgUAAxkBAAEC_BhoyiOzJLu2ofX54BtT7ftQKVPLFQACuxMAAtZgYVZaFxCncOnSvh4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>10</span>
+                                        <input type="text" class="form-control animation-sticker" id="animation-sticker-10" value="CAACAgUAAxkBAAEC_CtoyiWptLpqMWtw7wxlX1mCG_BRWwACJhYAAliTiFfWqSJ6sGh1Wh4E">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="sticker-category">
+                                <h4><i class="fas fa-video"></i> Video Stickers</h4>
+                                <div class="sticker-id-list">
+                                    <div class="sticker-id-item">
+                                        <span>1</span>
+                                        <input type="text" class="form-control video-sticker" id="video-sticker-1" value="CAACAgUAAxkBAAEC_DdoyibWBDKakm-ebNwC9K5nkkJZHgACEBcAArLaYFac-wO0FdWV7x4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>2</span>
+                                        <input type="text" class="form-control video-sticker" id="video-sticker-2" value="CAACAgUAAxkBAAEC_DZoyiawvrZAKaSpU1CsQ95jzOcXUwACaxUAAidWOVdBDOZaxl_33B4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>3</span>
+                                        <input type="text" class="form-control video-sticker" id="video-sticker-3" value="CAACAgUAAxkBAAEC_DNoyiYfdmYBe8NYeeN6iK-PTEsBzwAC3RgAAno74Fdni-89wX4mNh4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>4</span>
+                                        <input type="text" class="form-control video-sticker" id="video-sticker-4" value="CAACAgUAAxkBAAEC_DVoyiamb_MSf5gqK4Ev0h_0AtS9cQACfhgAAtiVMFeSdCVM8zYKJB4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>5</span>
+                                        <input type="text" class="form-control video-sticker" id="video-sticker-5" value="CAACAgUAAxkBAAEC_DNoyiYfdmYBe8NYeeN6iK-PTEsBzwAC3RgAAno74Fdni-89wX4mNh4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>6</span>
+                                        <input type="text" class="form-control video-sticker" id="video-sticker-6" value="CAACAgUAAxkBAAEC_DJoyiYfMQABYb-REJ8wdjzyjtjiZMsAAvEVAAKzBEhU7TVo7cUpO4EeBA">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>7</span>
+                                        <input type="text" class="form-control video-sticker" id="video-sticker-7" value="CAACAgUAAxkBAAEC_DFoyiYeZgewUfE7PvffZqxCl86ovAACHRUAAsOn4Fc2h9u69xnxRx4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>8</span>
+                                        <input type="text" class="form-control video-sticker" id="video-sticker-8" value="CAACAgUAAxkBAAEC_DBoyiYd_GCpjws3BtS_nBhtbg_y6gACUxMAAkPLSVVfxaN8acPr9h4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>9</span>
+                                        <input type="text" class="form-control video-sticker" id="video-sticker-9" value="CAACAgUAAxkBAAEC_C9oyiYbp9PsGsg65iaHoBOhzKGzwAACChUAAhj8YFQDw16kTOk7tR4E">
+                                    </div>
+                                    <div class="sticker-id-item">
+                                        <span>10</span>
+                                        <input type="text" class="form-control video-sticker" id="video-sticker-10" value="CAACAgUAAxkBAAEC_C5oyiYWqYvP38qyLB5ErwNCfKOwpQACPQ8AAsGX2FVNl-n1ATDowx4E">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="sticker-category">
+                            <h4><i class="fas fa-sad-tear"></i> Loss Sticker</h4>
+                            <div class="sticker-id-list">
+                                <div class="sticker-id-item">
+                                    <input type="text" class="form-control" id="loss-sticker" value="CAACAgUAAxkBAAEC_FNoyk3MBcCZd_YixMG0-KVHnjg99wACwRIAAojOYVabOteK5QtLUx4E">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <button type="button" id="save-sticker-settings" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Sticker Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Session Stickers Tab with Photo Upload -->
+            <div class="tab-content" id="session-stickers">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-images"></i> Session Stickers & Photos
+                    </h2>
+                    <div class="sticker-settings">
+                        <p class="info-note">Configure stickers and photos to be sent when sessions start and end.</p>
+                        
+                        <div class="session-stickers-container">
+                            <div class="session-sticker-category">
+                                <h4><i class="fas fa-play-circle"></i> Session Start</h4>
+                                <div class="session-sticker-id-list">
+                                    <div class="session-sticker-id-item">
+                                        <label>Session Start Sticker ID</label>
+                                        <input type="text" class="form-control" id="session-start-sticker" value="CAACAgUAAxkBAAEC_Iloy6OjhjD47VjYoigz6vBLT7UCrQACjxUAAs3ieVXSU-vCbGUS3x4E">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="session-sticker-category">
+                                <h4><i class="fas fa-stop-circle"></i> Session End</h4>
+                                <div class="session-sticker-id-list">
+                                    <div class="session-sticker-id-item">
+                                        <label>Session End Sticker ID</label>
+                                        <input type="text" class="form-control" id="session-end-sticker" value="CAACAgUAAxkBAAEC_Ipoy6OkbCykX1169QK7qJj7aJpL7AACOBIAAgeDeVVhg2FMHSUeDx4E">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="photo-upload-container">
+                            <div class="photo-upload-item">
+                                <h4><i class="fas fa-camera"></i> Session Start Photo</h4>
+                                <input type="file" class="form-control" id="session-start-photo" accept="image/*">
+                                <div class="photo-preview" id="session-start-photo-preview">
+                                    <i class="fas fa-image fa-3x" style="color: #ccc;"></i>
+                                </div>
+                                <button class="btn btn-primary upload-btn" id="upload-session-start-photo">
+                                    <i class="fas fa-upload"></i> Upload Photo
+                                </button>
+                            </div>
+                            
+                            <div class="photo-upload-item">
+                                <h4><i class="fas fa-camera"></i> Session End Photo</h4>
+                                <input type="file" class="form-control" id="session-end-photo" accept="image/*">
+                                <div class="photo-preview" id="session-end-photo-preview">
+                                    <i class="fas fa-image fa-3x" style="color: #ccc;"></i>
+                                </div>
+                                <button class="btn btn-primary upload-btn" id="upload-session-end-photo">
+                                    <i class="fas fa-upload"></i> Upload Photo
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="session-content-item">
+                            <h4><i class="fas fa-file-alt"></i> Session End Content</h4>
+                            <p class="info-note">This content will be automatically sent when a session ends.</p>
+                            <textarea class="form-control" id="session-end-content" rows="4" placeholder="Enter text or link to be sent when session ends"></textarea>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <button type="button" id="save-session-sticker-settings" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Session Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>AKELA AI Lottery Prediction System &copy; 2023</p>
+        </footer>
+    </div>
+    
+    <div class="splash-screen" id="splash-screen">
+        <div class="splash-content">
+            <h1><i class="fas fa-robot"></i> AKELA AI</h1>
+            <p>Advanced Lottery Prediction & Analysis System</p>
+            <button id="start-button" class="btn btn-primary">Start</button>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-message">Notification message</span>
+    </div>
+
+    <div class="session-stats-popup" id="session-stats-popup">
+        <div class="popup-header">
+            <h4><i class="fas fa-chart-bar"></i> Session Stats</h4>
+            <span class="popup-close" id="popup-close">&times;</span>
+        </div>
+        <div class="popup-content">
+            <div class="stat-item">
+                <span>Total Predictions:</span>
+                <span id="popup-total">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="win-text">Total Wins:</span>
+                <span class="win-text" id="popup-wins">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="loss-text">Total Losses:</span>
+                <span class="loss-text" id="popup-losses">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="help-center-btn" id="help-btn" title="Help Center">
+        <i class="fab fa-telegram"></i>
+    </div>
+
+    <script>
+        // Global variables for data fetching
+        let fetchedData = [];
+        let lastProcessedPeriod = null;
+        let calculationMode = "sasta"; // Default to sasta calculation
+
+        // Pattern-based prediction logic
+        const trendMap7 = {
+            'BBBBBBBB': 'S',
+            'SSSSSSS': 'B',
+            'BBBBBBBS': 'S',
+            'SSSSSSB': 'B',
+            'BBBBBSBB': 'S',
+            'SSSSBSSS': 'B',
+            'BBBBSBBB': 'S',
+            'BBSBBBBB': 'S',
+            'BSBBBBBB': 'B',
+            'SSBBSSB': 'B',
+            'SBSBBSS': 'B',
+            'SSBBSBS': 'B',
+            'BBSBBSB': 'B',
+            'SBSBSBS': 'B',
+            'BSSBSSB': 'S',
+            'SSBBSSS': 'S',
+            'BBSSSSS': 'S',
+            'SSBBBSB': 'B',
+            'BSSBBBS': 'S',
+            'SSBSSBB': 'B'
+        };
+
+        const trendMap6 = {
+            'BBBBBB': 'B',
+            'SSSSSS': 'S',
+            'BBBSSB': 'S',
+            'SSBBSS': 'B',
+            'BBSBSB': 'B',
+            'SBBSBB': 'S',
+            'BSBSBS': 'S',
+            'SBSBSB': 'B',
+            'BBSSBB': 'S',
+            'SSBBSS': 'B',
+            'BSSBSS': 'S',
+            'SBBSSB': 'B',
+            'BBSSBS': 'B',
+            'SBSSBB': 'S',
+            'BSSBBC': 'S',
+            'SBBSBS': 'B',
+            'SSSBBS': 'B',
+            'BBSSSB': 'S',
+            'SBBBSB': 'B'
+        };
+
+        const trendMap5 = {
+            'BBSSB': 'S',
+            'SSBBS': 'B',
+            'BSBBS': 'S',
+            'SBSBB': 'B',
+            'BBBSS': 'S',
+            'SSSBB': 'B',
+            'SBSSB': 'B',
+            'BSSSB': 'S',
+            'SBBSS': 'B',
+            'SSBSS': 'S'
+        };
+
+        // Instant High-Accuracy Prediction System (Deep Calculation)
+        class InstantPredictor {
+            constructor() {
+                this.history = [];
+                this.quickPatterns = {};
+                this.lastPredictions = [];
+                this.performance = { wins: 0, losses: 0, total: 0 };
+            }
+
+            // Add result to history
+            addResult(number) {
+                const type = number >= 5 ? "B" : "S";
+                this.history.push({ number, type });
+                
+                // Keep only last 50 records for quick analysis
+                if (this.history.length > 50) {
+                    this.history = this.history.slice(-50);
+                }
+                
+                return this.history.length;
+            }
+
+            // Ultra-fast pattern detection
+            findQuickPatterns() {
+                this.quickPatterns = {};
+                const bsSeq = this.history.map(r => r.type);
+                
+                // Check immediate patterns (3-5 length)
+                for (let len = 3; len <= 5; len++) {
+                    for (let i = 0; i <= bsSeq.length - len - 1; i++) {
+                        const pattern = bsSeq.slice(i, i + len).join('');
+                        const outcome = bsSeq[i + len];
+                        
+                        if (!this.quickPatterns[pattern]) {
+                            this.quickPatterns[pattern] = { B: 0, S: 0 };
+                        }
+                        this.quickPatterns[pattern][outcome]++;
+                    }
+                }
+            }
+
+            // Get prediction with high accuracy
+            getPrediction() {
+                if (this.history.length < 8) {
+                    return this.getEmergencyPrediction();
+                }
+
+                this.findQuickPatterns();
+                const bsSeq = this.history.map(r => r.type);
+                const recent = bsSeq.slice(-5); // Last 5 results
+                
+                // 1. Check exact pattern matches first
+                for (let len = 5; len >= 3; len--) {
+                    if (recent.length < len) continue;
+                    
+                    const currentPattern = recent.slice(-len).join('');
+                    const patternData = this.quickPatterns[currentPattern];
+                    
+                    if (patternData && (patternData.B + patternData.S) >= 2) {
+                        const total = patternData.B + patternData.S;
+                        const bProb = (patternData.B / total) * 100;
+                        const sProb = (patternData.S / total) * 100;
+                        
+                        if (Math.max(bProb, sProb) >= 70) {
+                            const prediction = bProb > sProb ? "B" : "S";
+                            return {
+                                type: prediction,
+                                confidence: Math.max(bProb, sProb),
+                                pattern: `${len}D: ${currentPattern}`,
+                                accuracy: "HIGH",
+                                basis: "Exact Pattern Match"
+                            };
+                        }
+                    }
+                }
+
+                // 2. Check quick trends
+                return this.getTrendPrediction();
+            }
+
+            // Emergency prediction for low data
+            getEmergencyPrediction() {
+                if (this.history.length < 3) {
+                    return {
+                        type: "SKIP",
+                        confidence: 0,
+                        message: "Need at least 3 records"
+                    };
+                }
+
+                const bsSeq = this.history.map(r => r.type);
+                const last3 = bsSeq.slice(-3);
+                
+                // Simple but effective patterns for small data
+                const quickPatternMap = {
+                    'BBB': 'S', 'SSS': 'B',
+                    'BBS': 'B', 'SSB': 'S',
+                    'SBB': 'S', 'BSS': 'B',
+                    'BSB': 'S', 'SBS': 'B'
+                };
+
+                const currentPattern = last3.join('');
+                if (quickPatternMap[currentPattern]) {
+                    return {
+                        type: quickPatternMap[currentPattern],
+                        confidence: 75,
+                        pattern: `3D: ${currentPattern}`,
+                        accuracy: "MEDIUM",
+                        basis: "Quick Pattern"
+                    };
+                }
+
+                // Fallback to ratio analysis
+                return this.getRatioPrediction();
+            }
+
+            // Trend-based prediction
+            getTrendPrediction() {
+                const last10 = this.history.slice(-10);
+                const bigCount = last10.filter(r => r.type === 'B').length;
+                const smallCount = last10.filter(r => r.type === 'S').length;
+                
+                // Strong trend detection
+                if (bigCount >= 7 || smallCount >= 7) {
+                    return {
+                        type: bigCount > smallCount ? "S" : "B",
+                        confidence: 80,
+                        pattern: `Trend: ${bigCount}B/${smallCount}S`,
+                        accuracy: "HIGH",
+                        basis: "Strong Trend Reversal"
+                    };
+                }
+
+                // Recent momentum
+                const last3 = this.history.slice(-3).map(r => r.type);
+                const lastType = last3[last3.length - 1];
+                
+                if (last3.filter(t => t === lastType).length >= 2) {
+                    return {
+                        type: lastType === "B" ? "S" : "B",
+                        confidence: 75,
+                        pattern: `Momentum: ${last3.join('')}`,
+                        accuracy: "HIGH",
+                        basis: "Momentum Reversal"
+                    };
+                }
+
+                // Final fallback
+                return this.getSmartPrediction();
+            }
+
+            // Smart prediction using multiple factors
+            getSmartPrediction() {
+                const bsSeq = this.history.map(r => r.type);
+                const last5 = bsSeq.slice(-5);
+                
+                // Count transitions
+                let changes = 0;
+                for (let i = 1; i < last5.length; i++) {
+                    if (last5[i] !== last5[i-1]) changes++;
+                }
+                
+                if (changes <= 1) { // Mostly same type
+                    return {
+                        type: last5[0] === "B" ? "S" : "B",
+                        confidence: 78,
+                        pattern: `Stable: ${last5.join('')}`,
+                        accuracy: "HIGH",
+                        basis: "Stability Pattern"
+                    };
+                } else { // Frequently changing
+                    const lastType = last5[last5.length - 1];
+                    return {
+                        type: lastType,
+                        confidence: 72,
+                        pattern: `Volatile: ${last5.join('')}`,
+                        accuracy: "MEDIUM",
+                        basis: "Volatility Pattern"
+                    };
+                }
+            }
+
+            // Ratio-based prediction
+            getRatioPrediction() {
+                const bigCount = this.history.filter(r => r.type === 'B').length;
+                const smallCount = this.history.filter(r => r.type === 'S').length;
+                
+                return {
+                    type: bigCount > smallCount ? "S" : "B",
+                    confidence: Math.abs(bigCount - smallCount) * 15 + 60,
+                    pattern: `Ratio: ${bigCount}B/${smallCount}S`,
+                    accuracy: "MEDIUM",
+                    basis: "Overall Ratio"
+                };
+            }
+
+            // Check prediction result and update performance
+            checkResult(actualNumber) {
+                const actualType = actualNumber >= 5 ? "B" : "S";
+                const prediction = this.getPrediction();
+                
+                if (prediction.type === "SKIP") {
+                    return { result: "SKIPPED", accuracy: this.getAccuracy() };
+                }
+                
+                this.performance.total++;
+                const isWin = prediction.type === actualType;
+                
+                if (isWin) {
+                    this.performance.wins++;
+                } else {
+                    this.performance.losses++;
+                }
+                
+                // Store for learning
+                this.lastPredictions.push({
+                    prediction: prediction.type,
+                    actual: actualType,
+                    correct: isWin,
+                    confidence: prediction.confidence
+                });
+                
+                return {
+                    result: isWin ? "WIN" : "LOSE",
+                    predicted: prediction.type,
+                    actual: actualType,
+                    confidence: prediction.confidence,
+                    accuracy: this.getAccuracy(),
+                    streak: this.getCurrentStreak()
+                };
+            }
+
+            getAccuracy() {
+                if (this.performance.total === 0) return "0%";
+                return ((this.performance.wins / this.performance.total) * 100).toFixed(1) + "%";
+            }
+
+            getCurrentStreak() {
+                if (this.lastPredictions.length === 0) return 0;
+                
+                let streak = 0;
+                let lastResult = this.lastPredictions[this.lastPredictions.length - 1].correct;
+                
+                for (let i = this.lastPredictions.length - 1; i >= 0; i--) {
+                    if (this.lastPredictions[i].correct === lastResult) {
+                        streak++;
+                    } else {
+                        break;
+                    }
+                }
+                
+                return lastResult ? streak : -streak;
+            }
+
+            // Get system status
+            getStatus() {
+                return {
+                    totalRecords: this.history.length,
+                    performance: this.performance,
+                    accuracy: this.getAccuracy(),
+                    currentStreak: this.getCurrentStreak(),
+                    readiness: this.history.length >= 8 ? "READY" : "LEARNING",
+                    recommendation: this.history.length < 8 ? 
+                        `Add ${8 - this.history.length} more records` : 
+                        "System is OPTIMAL"
+                };
+            }
+        }
+
+        // Initialize deep predictor
+        const deepPredictor = new InstantPredictor();
+
+        // Get Big/Small type
+        function getType(num) {
+            return num >= 5 ? "B" : "S";
+        }
+
+        // Pattern-based prediction calculation (Sasta mode)
+        function calculatePrediction(bsSeq) {
+            // 7-digit pattern check
+            const pattern7 = bsSeq.slice(-7).join('');
+            if (trendMap7[pattern7]) {
+                return {
+                    type: trendMap7[pattern7],
+                    bsConf: 90,
+                    pattern: "7D: " + pattern7
+                };
+            }
+            
+            // 6-digit pattern check
+            const pattern6 = bsSeq.slice(-6).join('');
+            if (trendMap6[pattern6]) {
+                return {
+                    type: trendMap6[pattern6],
+                    bsConf: 80,
+                    pattern: "6D: " + pattern6
+                };
+            }
+            
+            // 5-digit pattern check
+            const pattern5 = bsSeq.slice(-5).join('');
+            if (trendMap5[pattern5]) {
+                return {
+                    type: trendMap5[pattern5],
+                    bsConf: 70,
+                    pattern: "5D: " + pattern5
+                };
+            }
+            
+            // No pattern found
+            return {
+                type: "SKIP",
+                bsConf: 0,
+                pattern: "N/A"
+            };
+        }
+
+        // Generate prediction using pattern-based logic
+        function generatePrediction() {
+            if (fetchedData.length < 10) {
+                return Math.floor(Math.random() * 10);
+            }
+            
+            // Use different prediction methods based on calculation mode
+            if (calculationMode === "sasta") {
+                // Sasta calculation (original method)
+                const bsSeq = fetchedData.slice(0, 50).map(item => getType(parseInt(item.number))).reverse();
+                const prediction = calculatePrediction(bsSeq);
+                
+                if (prediction.type === "SKIP") {
+                    // Fallback to random number if no pattern found
+                    return Math.floor(Math.random() * 10);
+                }
+                
+                // Convert B/S prediction to number
+                if (prediction.type === "B") {
+                    return Math.floor(Math.random() * 5) + 5; // 5-9
+                } else {
+                    return Math.floor(Math.random() * 5); // 0-4
+                }
+            } else {
+                // Deep calculation (new method)
+                // First, update the deep predictor with all available data
+                fetchedData.slice().reverse().forEach(item => {
+                    deepPredictor.addResult(parseInt(item.number));
+                });
+                
+                // Get prediction from deep predictor
+                const prediction = deepPredictor.getPrediction();
+                
+                if (prediction.type === "SKIP") {
+                    // Fallback to random number if prediction is to skip
+                    return Math.floor(Math.random() * 10);
+                }
+                
+                // Convert B/S prediction to number
+                if (prediction.type === "B") {
+                    return Math.floor(Math.random() * 5) + 5; // 5-9
+                } else {
+                    return Math.floor(Math.random() * 5); // 0-4
+                }
+            }
+        }
+
+        // DOM Elements
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        const saveTelegramBtn = document.getElementById('save-telegram-settings');
+        const fetchedDataTable = document.getElementById('fetched-data-table').querySelector('tbody');
+        const lastUpdatedEl = document.getElementById('last-updated');
+        const progressBar = document.getElementById('progress-bar');
+        const predictionHistoryTable = document.getElementById('prediction-history').querySelector('tbody');
+        const autoSessionToggleBtn = document.getElementById('session-toggle');
+        const clearPredictionsBtn = document.getElementById('clear-predictions-btn');
+        const clearFetchedBtn = document.getElementById('clear-fetched-btn');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const sessionStatsPopup = document.getElementById('session-stats-popup');
+        const popupTotalEl = document.getElementById('popup-total');
+        const popupWinsEl = document.getElementById('popup-wins');
+        const popupLossesEl = document.getElementById('popup-losses');
+        const sessionEndCountInput = document.getElementById('session-end-count');
+        const toggleScheduledBtn = document.getElementById('toggle-scheduled-btn');
+        const toggleTimingSessionsBtn = document.getElementById('toggle-timing-sessions');
+        const popupCloseBtn = document.getElementById('popup-close');
+
+        // Manual Prediction Tab Elements
+        const manualSessionStartBtn = document.getElementById('manual-session-start');
+        const manualSessionEndBtn = document.getElementById('manual-session-end');
+        const manualSessionInfo = document.getElementById('manual-session-info');
+        const manualProgressBar = document.getElementById('manual-progress-bar');
+        const manualPeriodInput = document.getElementById('manual-period');
+        const manualSizePredSelect = document.getElementById('manual-size-pred');
+        const manualNumberPredInput = document.getElementById('manual-number-pred');
+        const submitManualPredictionBtn = document.getElementById('submit-manual-prediction');
+        const manualMessageTemplateInput = document.getElementById('manual-message-template');
+        const manualTemplatePreview = document.getElementById('manual-template-preview');
+
+        // Auto Prediction Template Elements
+        const messageTemplateInput = document.getElementById('message-template');
+        const templatePreview = document.getElementById('template-preview');
+
+        // Sticker Settings Elements
+        const saveStickerSettingsBtn = document.getElementById('save-sticker-settings');
+
+        // Session Sticker Elements
+        const saveSessionStickerBtn = document.getElementById('save-session-sticker-settings');
+        const sessionStartStickerInput = document.getElementById('session-start-sticker');
+        const sessionEndStickerInput = document.getElementById('session-end-sticker');
+        const sessionEndContentInput = document.getElementById('session-end-content');
+
+        // Server Tab Elements
+        const modeOptions = document.querySelectorAll('.mode-option');
+        const sastaDescription = document.getElementById('sasta-description');
+        const deepDescription = document.getElementById('deep-description');
+        const sastaStatus = document.getElementById('sasta-status');
+        const deepStatus = document.getElementById('deep-status');
+        const saveCalculationModeBtn = document.getElementById('save-calculation-mode');
+
+        // Photo Upload Elements
+        const sessionStartPhotoInput = document.getElementById('session-start-photo');
+        const sessionEndPhotoInput = document.getElementById('session-end-photo');
+        const sessionStartPhotoPreview = document.getElementById('session-start-photo-preview');
+        const sessionEndPhotoPreview = document.getElementById('session-end-photo-preview');
+        const uploadSessionStartPhotoBtn = document.getElementById('upload-session-start-photo');
+        const uploadSessionEndPhotoBtn = document.getElementById('upload-session-end-photo');
+
+        // Splash screen elements
+        const splashScreen = document.getElementById('splash-screen');
+        const startButton = document.getElementById('start-button');
+        const mainContent = document.getElementById('main-content');
+
+        // Global variables
+        let predictions = [];
+        let isAutoSessionActive = false;
+        let isManualSessionActive = false;
+        let isScheduledMessagesActive = false;
+        let isTimingSessionsActive = false;
+        let updateTimer;
+        let manualUpdateTimer;
+        let scheduledMessagesTimer;
+        let timingSessionsTimer;
+        let sessionStats = { wins: 0, losses: 0, total: 0 };
+        let sessionEndLimit = 10;
+        let telegramSettings = {
+            botToken: '',
+            channelId: '',
+            messageTemplate: 'PERIOD ➪ {issueNumber}\nRESULT ➪ {size} / {number}'
+        };
+        let manualMessageTemplate = 'PERIOD ➪ {issueNumber}\nRESULT ➪ {size} / {number}';
+        let scheduledMessages = [];
+        let autoTimingSessions = [];
+        let newPredictionSent = false;
+        let sentMessagesForMinute = {};
+        let lastSentMinute = -1;
+        
+        // Sticker IDs
+        let animationStickers = [
+            "CAACAgUAAxkBAAEGwshovqkrb8XpSFTh2yArrjlEICuKfAACYxAAAh91GVc3ptodpS_zpx4E",
+            "CAACAgUAAxkBAAEC_AtoyiKk6BpoB6j_IA3gUqnB6JsaVwAC5g4AAkXf6FdoCMHqXadTCB4E",
+            "CAACAgUAAxkBAAEC_A5oyiLKVzj8gO5NCKzoEU8flARuMAAC8RIAAo7VgFQ2DpiQuB_pVB4E",
+            "CAACAgUAAxkBAAEC_A9oyiLc7etpPaYJk3ej_93ewb-h7QAC0hcAAsPycVSffCbGo2_kcB4E",
+            "CAACAgUAAxkBAAEC_BBoyiMvuzhC-LJnENEztR63ZmNf2QACJxAAAoQ06Vfrak_IqecfsR4E",
+            "CAACAgUAAxkBAAEC_BFoyiM0M623xTON7FmX-xpUcIx_WQACuxYAAhtEcVU_4HGdOiVh9x4E",
+            "CAACAgUAAxkBAAEC_BRoyiNtS_7FGLJZYyHsqnbeBMFZYAACpBMAAkzjgFfWSWdLXPRF3R4E",
+            "CAACAgUAAxkBAAEC_BZoyiOV0s2NaQScOHATdx0kcFfc7AACXhYAAnij-VVjmTZNEK5CPh4E",
+            "CAACAgUAAxkBAAEC_BhoyiOzJLu2ofX54BtT7ftQKVPLFQACuxMAAtZgYVZaFxCncOnSvh4E",
+            "CAACAgUAAxkBAAEC_CtoyiWptLpqMWtw7wxlX1mCG_BRWwACJhYAAliTiFfWqSJ6sGh1Wh4E"
+        ];
+        
+        let videoStickers = [
+            "CAACAgUAAxkBAAEC_DdoyibWBDKakm-ebNwC9K5nkkJZHgACEBcAArLaYFac-wO0FdWV7x4E",
+            "CAACAgUAAxkBAAEC_DZoyiawvrZAKaSpU1CsQ95jzOcXUwACaxUAAidWOVdBDOZaxl_33B4E",
+            "CAACAgUAAxkBAAEC_DNoyiYfdmYBe8NYeeN6iK-PTEsBzwAC3RgAAno74Fdni-89wX4mNh4E",
+            "CAACAgUAAxkBAAEC_DVoyiamb_MSf5gqK4Ev0h_0AtS9cQACfhgAAtiVMFeSdCVM8zYKJB4E",
+            "CAACAgUAAxkBAAEC_DNoyiYfdmYBe8NYeeN6iK-PTEsBzwAC3RgAAno74Fdni-89wX4mNh4E",
+            "CAACAgUAAxkBAAEC_DJoyiYfMQABYb-REJ8wdjzyjtjiZMsAAvEVAAKzBEhU7TVo7cUpO4EeBA",
+            "CAACAgUAAxkBAAEC_DFoyiYeZgewUfE7PvffZqxCl86ovAACHRUAAsOn4Fc2h9u69xnxRx4E",
+            "CAACAgUAAxkBAAEC_DBoyiYd_GCpjws3BtS_nBhtbg_y6gACUxMAAkPLSVVfxaN8acPr9h4E",
+            "CAACAgUAAxkBAAEC_C9oyiYbp9PsGsg65iaHoBOhzKGzwAACChUAAhj8YFQDw16kTOk7tR4E",
+            "CAACAgUAAxkBAAEC_C5oyiYWqYvP38qyLB5ErwNCfKOwpQACPQ8AAsGX2FVNl-n1ATDowx4E"
+        ];
+        
+        let lossSticker = "CAACAgUAAxkBAAEC_FNoyk3MBcCZd_YixMG0-KVHnjg99wACwRIAAojOYVabOteK5QtLUx4E";
+        
+        // Session Stickers
+        let sessionStartSticker = "CAACAgUAAxkBAAEC_Iloy6OjhjD47VjYoigz6vBLT7UCrQACjxUAAs3ieVXSU-vCbGUS3x4E";
+        let sessionEndSticker = "CAACAgUAAxkBAAEC_Ipoy6OkbCykX1169QK7qJj7aJpL7AACOBIAAgeDeVVhg2FMHSUeDx4E";
+        let sessionEndContent = "";
+
+        // Session Photos
+        let sessionStartPhoto = null;
+        let sessionEndPhoto = null;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            loadSavedData();
+            updateTemplatePreviews();
+        });
+
+        function setupEventListeners() {
+            startButton.addEventListener('click', startSystem);
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+
+            saveTelegramBtn.addEventListener('click', saveTelegramSettings);
+            autoSessionToggleBtn.addEventListener('click', toggleAutoSession);
+            refreshBtn.addEventListener('click', () => {
+                window.location.reload();
+            });
+
+            const helpBtn = document.getElementById('help-btn');
+            helpBtn.addEventListener('click', () => {
+                window.open('https://t.me/+Sa9rISoccao2ZDQ1', '_blank');
+            });
+
+            clearPredictionsBtn.addEventListener('click', clearPredictionData);
+            clearFetchedBtn.addEventListener('click', clearFetchedData);
+
+            manualSessionStartBtn.addEventListener('click', startManualSession);
+            manualSessionEndBtn.addEventListener('click', endManualSession);
+            submitManualPredictionBtn.addEventListener('click', submitManualPrediction);
+            
+            toggleScheduledBtn.addEventListener('click', toggleScheduledMessages);
+            toggleTimingSessionsBtn.addEventListener('click', toggleTimingSessions);
+            
+            saveStickerSettingsBtn.addEventListener('click', saveStickerSettings);
+            saveSessionStickerBtn.addEventListener('click', saveSessionStickerSettings);
+
+            // Server tab event listeners
+            modeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    modeOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    
+                    const mode = option.getAttribute('data-mode');
+                    if (mode === 'sasta') {
+                        sastaDescription.style.display = 'block';
+                        deepDescription.style.display = 'none';
+                    } else {
+                        sastaDescription.style.display = 'none';
+                        deepDescription.style.display = 'block';
+                    }
+                });
+            });
+            
+            saveCalculationModeBtn.addEventListener('click', saveCalculationMode);
+
+            // Template preview event listeners
+            messageTemplateInput.addEventListener('input', updateTemplatePreviews);
+            manualMessageTemplateInput.addEventListener('input', updateTemplatePreviews);
+            manualSizePredSelect.addEventListener('change', updateTemplatePreviews);
+            manualNumberPredInput.addEventListener('input', updateTemplatePreviews);
+
+            // Photo upload event listeners
+            sessionStartPhotoInput.addEventListener('change', handlePhotoUpload);
+            sessionEndPhotoInput.addEventListener('change', handlePhotoUpload);
+            uploadSessionStartPhotoBtn.addEventListener('click', () => sessionStartPhotoInput.click());
+            uploadSessionEndPhotoBtn.addEventListener('click', () => sessionEndPhotoInput.click());
+
+            // Popup close button
+            popupCloseBtn.addEventListener('click', () => {
+                sessionStatsPopup.classList.remove('show');
+            });
+
+            makeDraggable(sessionStatsPopup);
+        }
+
+        // Handle photo upload
+        function handlePhotoUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = document.createElement('img');
+                img.src = event.target.result;
+                
+                if (e.target.id === 'session-start-photo') {
+                    sessionStartPhotoPreview.innerHTML = '';
+                    sessionStartPhotoPreview.appendChild(img);
+                    sessionStartPhoto = event.target.result;
+                } else {
+                    sessionEndPhotoPreview.innerHTML = '';
+                    sessionEndPhotoPreview.appendChild(img);
+                    sessionEndPhoto = event.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Save calculation mode
+        function saveCalculationMode() {
+            const selectedMode = document.querySelector('.mode-option.active').getAttribute('data-mode');
+            calculationMode = selectedMode;
+            
+            if (selectedMode === 'sasta') {
+                sastaStatus.textContent = 'Active';
+                deepStatus.textContent = 'Inactive';
+                showNotification('Sasta calculation mode activated', 'success');
+            } else {
+                sastaStatus.textContent = 'Inactive';
+                deepStatus.textContent = 'Active';
+                showNotification('Deep calculation mode activated', 'success');
+            }
+            
+            saveSettingsToLocalStorage();
+        }
+
+        // Update template previews
+        function updateTemplatePreviews() {
+            // Update auto prediction template
+            telegramSettings.messageTemplate = messageTemplateInput.value;
+            const sizePred = 'BIG';
+            const numberPred = '5';
+            const period = fetchedData.length > 0 ? incrementIssueNumber(fetchedData[0].issueNumber).slice(-4) : '1234';
+            
+            const autoPreview = telegramSettings.messageTemplate
+                .replace(/{issueNumber}/g, period)
+                .replace(/{size}/g, sizePred)
+                .replace(/{number}/g, numberPred);
+                
+            templatePreview.textContent = autoPreview;
+            
+            // Update manual prediction template
+            manualMessageTemplate = manualMessageTemplateInput.value;
+            const manualSizePred = manualSizePredSelect.value || 'BIG';
+            const manualNumberPred = manualNumberPredInput.value || '5';
+            const manualPeriod = manualPeriodInput.value || period;
+            
+            const manualPreview = manualMessageTemplate
+                .replace(/{issueNumber}/g, manualPeriod)
+                .replace(/{size}/g, manualSizePred)
+                .replace(/{number}/g, manualNumberPred);
+                
+            manualTemplatePreview.textContent = manualPreview;
+        }
+
+        async function startSystem() {
+            splashScreen.classList.add('hidden');
+            showNotification('AKELA AI System initialized', 'info');
+            await fetchData();
+            startUpdateTimer();
+            updatePredictionHistoryTable();
+            updateTemplatePreviews();
+        }
+
+        function switchTab(tabId) {
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+        }
+
+        // Fetch data from API
+        async function fetchData() {
+            try {
+                const timestamp = Date.now();
+                const apiUrl = `https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json?ts=${timestamp}`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (data && data.data && data.data.list && data.data.list.length > 0) {
+                    await processNewData(data.data.list);
+                    updateDashboardUI();
+                    updateTemplatePreviews();
+                } else {
+                    showNotification('No data received from API', 'warning');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showNotification('Error fetching data. Check console for details.', 'error');
+            }
+        }
+
+        // Process new data from API
+        async function processNewData(newData) {
+            const uniqueNewData = newData.filter(item => {
+                return !fetchedData.some(existing => existing.issueNumber === item.issueNumber);
+            });
+            
+            if (uniqueNewData.length === 0) {
+                return;
+            }
+            
+            const processedData = uniqueNewData.map(item => ({
+                ...item,
+                timestamp: new Date().toISOString(),
+                size: parseInt(item.number) >= 5 ? 'BIG' : 'SMALL'
+            }));
+            
+            fetchedData = [...processedData, ...fetchedData];
+            if (fetchedData.length > 30000) {
+                fetchedData = fetchedData.slice(0, 30000);
+            }
+            
+            updateFetchedDataTable();
+            updateLastUpdated();
+            
+            processedData.sort((a, b) => parseInt(a.issueNumber) - parseInt(b.issueNumber));
+            
+            for (const item of processedData) {
+                await verifyAndSend(item);
+            }
+            
+            showNotification(`Processed ${processedData.length} new records`, 'success');
+        }
+
+        // Update fetched data table
+        function updateFetchedDataTable() {
+            fetchedDataTable.innerHTML = '';
+            const dataToShow = fetchedData.slice(0, 100);
+            dataToShow.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td title="${item.issueNumber}">${item.issueNumber.slice(-4)}</td>
+                    <td>${item.number}</td>
+                    <td>${item.size}</td>
+                `;
+                fetchedDataTable.appendChild(row);
+            });
+        }
+
+        // Update last updated timestamp
+        function updateLastUpdated() {
+            lastUpdatedEl.textContent = `Last updated: ${new Date().toLocaleString()}`;
+        }
+
+        // Increment issue number
+        function incrementIssueNumber(issueNumber) {
+            const lastFourDigits = issueNumber.slice(-4);
+            const incremented = (parseInt(lastFourDigits) + 1).toString().padStart(4, '0');
+            return issueNumber.slice(0, -4) + incremented;
+        }
+
+        // Verify prediction and send results
+        async function verifyAndSend(newestData) {
+            const latestPrediction = predictions.find(p => p.issueNumber === newestData.issueNumber);
+            if (latestPrediction && latestPrediction.result === null) {
+                latestPrediction.actualNumber = newestData.number;
+                latestPrediction.actualSize = newestData.size;
+                
+                const isSizeCorrect = latestPrediction.sizePrediction && latestPrediction.sizePrediction === newestData.size;
+                const isNumberCorrect = latestPrediction.numberPrediction && parseInt(latestPrediction.numberPrediction) === parseInt(newestData.number);
+                
+                const isWin = isSizeCorrect || isNumberCorrect;
+                latestPrediction.result = isWin ? 'win' : 'loss';
+                updatePredictionHistoryTable();
+                
+                setTimeout(async () => {
+                    if (isWin) {
+                        showNotification('Prediction was correct!', 'success');
+                        // Send win stickers: animation + video
+                        await sendTelegramSticker(getRandomAnimationSticker());
+                        await new Promise(resolve => setTimeout(resolve, 1000)); // Small delay
+                        await sendTelegramSticker(getRandomVideoSticker());
+                    } else {
+                        showNotification('Prediction was incorrect.', 'warning');
+                        // Send loss sticker
+                        await sendTelegramSticker(lossSticker);
+                    }
+                    
+                    if (latestPrediction.type === 'auto') {
+                        if (isAutoSessionActive) {
+                            sessionStats.total++;
+                            if (isWin) {
+                                sessionStats.wins++;
+                            } else {
+                                sessionStats.losses++;
+                            }
+                            updateSessionStatsPopup();
+                            
+                            if (sessionStats.wins >= sessionEndLimit) {
+                                await endAutoSession();
+                                return;
+                            }
+                            
+                            await sendTelegramNextPrediction(newestData);
+                        }
+                    } else if (latestPrediction.type === 'manual') {
+                        newPredictionSent = false;
+                    }
+                }, 10000);
+            } else {
+                if (isAutoSessionActive) {
+                    await sendTelegramNextPrediction(newestData);
+                }
+            }
+        }
+
+        // Send next prediction to Telegram
+        async function sendTelegramNextPrediction(lastItem) {
+            const nextIssueNumber = incrementIssueNumber(lastItem.issueNumber);
+            const numberPrediction = generatePrediction();
+            const sizePrediction = numberPrediction >= 5 ? 'BIG' : 'SMALL';
+            
+            const prediction = {
+                timestamp: new Date().toISOString(),
+                issueNumber: nextIssueNumber,
+                numberPrediction,
+                sizePrediction,
+                actualNumber: null,
+                actualSize: null,
+                result: null,
+                type: 'auto'
+            };
+            
+            predictions.unshift(prediction);
+            if (predictions.length > 30000) {
+                predictions = predictions.slice(0, 30000);
+            }
+            
+            updatePredictionUI(prediction);
+            updatePredictionHistoryTable();
+            
+            if (telegramSettings.botToken && telegramSettings.channelId) {
+                await sendTelegramMessage(prediction);
+            }
+        }
+
+        function startUpdateTimer() {
+            clearInterval(updateTimer);
+            let lastFetchSecond = -1;
+
+            function updateProgressBar() {
+                const now = new Date();
+                const istOffset = 5.5 * 60 * 60 * 1000;
+                const istTime = new Date(now.getTime() + istOffset);
+                const seconds = istTime.getSeconds();
+
+                const percentage = (seconds / 60) * 100;
+                const timeLeft = 60 - seconds;
+
+                progressBar.style.width = `${percentage}%`;
+                progressBar.textContent = `Updating in ${timeLeft}s`;
+                
+                if (timeLeft <= 10) {
+                    progressBar.style.background = `linear-gradient(90deg, var(--danger), var(--warning))`;
+                } else {
+                    progressBar.style.background = `linear-gradient(90deg, var(--primary), var(--secondary))`;
+                }
+                
+                if (seconds === 0 && lastFetchSecond !== 0) {
+                    fetchData();
+                }
+                lastFetchSecond = seconds;
+            }
+
+            updateProgressBar();
+            updateTimer = setInterval(updateProgressBar, 1000);
+        }
+
+        function startManualUpdateTimer() {
+            clearInterval(manualUpdateTimer);
+            let lastFetchSecond = -1;
+            let lastFetchedIssueNumber = fetchedData.length > 0 ? fetchedData[0].issueNumber : null;
+
+            function updateManualProgressBar() {
+                const now = new Date();
+                const istOffset = 5.5 * 60 * 60 * 1000;
+                const istTime = new Date(now.getTime() + istOffset);
+                const seconds = istTime.getSeconds();
+
+                const percentage = (seconds / 60) * 100;
+                const timeLeft = 60 - seconds;
+
+                manualProgressBar.style.width = `${percentage}%`;
+                
+                if (timeLeft <= 15) {
+                    manualProgressBar.textContent = `Please input result`;
+                    manualProgressBar.classList.add('blink');
+                } else {
+                    manualProgressBar.textContent = `Time left: ${timeLeft}s`;
+                    manualProgressBar.classList.remove('blink');
+                }
+
+                if (seconds === 0 && lastFetchSecond !== 0) {
+                    fetchData();
+                }
+                lastFetchSecond = seconds;
+                
+                const currentIssueNumber = fetchedData.length > 0 ? fetchedData[0].issueNumber : null;
+                if (currentIssueNumber && currentIssueNumber !== lastFetchedIssueNumber) {
+                    newPredictionSent = false;
+                    manualPeriodInput.value = incrementIssueNumber(currentIssueNumber);
+                    lastFetchedIssueNumber = currentIssueNumber;
+                    updateTemplatePreviews();
+                }
+            }
+
+            updateManualProgressBar();
+            manualUpdateTimer = setInterval(updateManualProgressBar, 1000);
+        }
+
+        function updateDashboardUI() {
+            if (fetchedData.length > 0) {
+                const latestPeriod = fetchedData[0].issueNumber;
+                const nextPeriod = incrementIssueNumber(latestPeriod);
+                const prediction = generatePrediction();
+
+                document.getElementById('next-period').textContent = nextPeriod.slice(-4);
+                document.getElementById('number-pred').textContent = prediction;
+                document.getElementById('size-pred').textContent = prediction >= 5 ? 'BIG' : 'SMALL';
+            }
+        }
+
+        function submitManualPrediction() {
+            if (!isManualSessionActive) {
+                showNotification('Please start a manual session first.', 'warning');
+                return;
+            }
+            
+            if (newPredictionSent) {
+                showNotification('Please wait for the next period.', 'warning');
+                return;
+            }
+            
+            const manualPeriod = manualPeriodInput.value;
+            const manualSize = manualSizePredSelect.value;
+            const manualNumber = manualNumberPredInput.value;
+
+            if (!manualSize && !manualNumber) {
+                showNotification('Please enter at least a Size or a Number.', 'error');
+                return;
+            }
+            
+            const nextIssueNumber = fetchedData.length > 0 ? incrementIssueNumber(fetchedData[0].issueNumber) : null;
+            if (!nextIssueNumber) {
+                showNotification('Cannot determine next period. Please try again.', 'error');
+                return;
+            }
+
+            const prediction = {
+                issueNumber: nextIssueNumber,
+                numberPrediction: manualNumber || null,
+                sizePrediction: manualSize || null,
+                actualNumber: null,
+                actualSize: null,
+                result: null,
+                type: 'manual'
+            };
+            
+            predictions.unshift(prediction);
+            updatePredictionUI(prediction);
+            updatePredictionHistoryTable();
+            saveSettingsToLocalStorage();
+            newPredictionSent = true;
+            
+            sendTelegramManualPrediction(prediction);
+            showNotification(`Manual prediction for period ${manualPeriod.slice(-4)} submitted`, 'info');
+        }
+
+        async function sendTelegramManualPrediction(prediction) {
+            if (!telegramSettings.botToken || !telegramSettings.channelId) {
+                showNotification('Telegram settings not configured.', 'warning');
+                return;
+            }
+
+            // Use the manual message template
+            const message = manualMessageTemplate
+                .replace(/{issueNumber}/g, prediction.issueNumber.slice(-4))
+                .replace(/{size}/g, prediction.sizePrediction || '')
+                .replace(/{number}/g, prediction.numberPrediction || '');
+
+            const telegramApiUrl = `https://api.telegram.org/bot${telegramSettings.botToken}/sendMessage`;
+            try {
+                const response = await fetch(telegramApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: telegramSettings.channelId, text: message })
+                });
+                const data = await response.json();
+                if (data.ok) {
+                    showNotification('Manual prediction sent to Telegram successfully', 'success');
+                } else {
+                    showNotification(`Telegram API Error: ${data.description}`, 'error');
+                    console.error('Telegram API Error:', data);
+                }
+            } catch (error) {
+                showNotification('Failed to send manual prediction to Telegram', 'error');
+                console.error('Network error sending message to Telegram:', error);
+            }
+        }
+
+        function updatePredictionUI(prediction) {
+            document.getElementById('next-period').textContent = prediction.issueNumber.slice(-4);
+            document.getElementById('number-pred').textContent = prediction.numberPrediction || '--';
+            document.getElementById('size-pred').textContent = prediction.sizePrediction || '--';
+        }
+
+        function updatePredictionHistoryTable() {
+            predictionHistoryTable.innerHTML = '';
+            const predictionsToShow = predictions.slice(0, 100);
+            predictionsToShow.forEach(pred => {
+                const row = document.createElement('tr');
+                let resultColor = 'inherit';
+                if (pred.result === 'win') {
+                    resultColor = 'var(--success)';
+                } else if (pred.result === 'loss') {
+                    resultColor = 'var(--danger)';
+                }
+                row.innerHTML = `
+                    <td>${pred.issueNumber.slice(-4)}</td>
+                    <td>${pred.numberPrediction || '--'}</td>
+                    <td>${pred.sizePrediction || '--'}</td>
+                    <td style="color:${resultColor};">${pred.result ? pred.result.toUpperCase() : '--'}</td>
+                `;
+                predictionHistoryTable.appendChild(row);
+            });
+            updateStats();
+        }
+
+        function updateStats() {
+            const completedPredictions = predictions.filter(p => p.result !== null);
+            if (completedPredictions.length > 0) {
+                const wins = completedPredictions.filter(p => p.result === 'win').length;
+                const sizeCorrect = completedPredictions.filter(p => p.sizePrediction === p.actualSize).length;
+                
+                const sizeAccuracy = ((sizeCorrect / completedPredictions.length) * 100).toFixed(1);
+                const winRate = ((wins / completedPredictions.length) * 100).toFixed(1);
+
+                document.getElementById('total-predictions').textContent = completedPredictions.length;
+                document.getElementById('win-rate').textContent = `Win Rate: ${winRate}%`;
+            }
+        }
+
+        function updateSessionStatsPopup() {
+            popupTotalEl.textContent = sessionStats.total;
+            popupWinsEl.textContent = sessionStats.wins;
+            popupLossesEl.textContent = sessionStats.losses;
+        }
+
+        function toggleAutoSession() {
+            if (isAutoSessionActive) {
+                endAutoSession();
+            } else {
+                startAutoSession();
+            }
+        }
+
+        async function startAutoSession() {
+            if (!telegramSettings.botToken || !telegramSettings.channelId) {
+                showNotification('Please configure Telegram settings first.', 'warning');
+                return;
+            }
+            if (isAutoSessionActive) return;
+            isAutoSessionActive = true;
+            sessionStats = { wins: 0, losses: 0, total: 0 };
+            sessionEndLimit = parseInt(sessionEndCountInput.value) || 10;
+            sessionStatsPopup.classList.add('show');
+            updateSessionStatsPopup();
+            showNotification('New auto prediction session started', 'success');
+            
+            // Send session start photo if available
+            if (sessionStartPhoto) {
+                await sendTelegramPhoto(sessionStartPhoto, "Session Started!");
+            }
+            
+            // Send session start sticker
+            await sendTelegramSticker(sessionStartSticker);
+            
+            if (fetchedData.length > 0) {
+                await sendTelegramNextPrediction(fetchedData[0]);
+            }
+            
+            autoSessionToggleBtn.innerHTML = '<i class="fas fa-stop"></i> End Auto Session';
+            autoSessionToggleBtn.classList.remove('btn-secondary');
+            autoSessionToggleBtn.classList.add('btn-danger');
+        }
+
+        async function endAutoSession() {
+            isAutoSessionActive = false;
+            sessionStatsPopup.classList.remove('show');
+            showNotification('Auto prediction session ended', 'info');
+
+            // Send session end sticker
+            await sendTelegramSticker(sessionEndSticker);
+            
+            // Send session end photo if available
+            if (sessionEndPhoto) {
+                await sendTelegramPhoto(sessionEndPhoto, "Session Ended!");
+            }
+            
+            // Send session end content if configured
+            if (sessionEndContent) {
+                await sendTelegramPlainMessage(sessionEndContent);
+            }
+
+            autoSessionToggleBtn.innerHTML = '<i class="fas fa-play"></i> Start Auto Session';
+            autoSessionToggleBtn.classList.remove('btn-danger');
+            autoSessionToggleBtn.classList.add('btn-secondary');
+        }
+
+        async function startManualSession() {
+            if (!telegramSettings.botToken || !telegramSettings.channelId) {
+                showNotification('Please configure Telegram settings first.', 'warning');
+                return;
+            }
+            if (isManualSessionActive) return;
+
+            isManualSessionActive = true;
+            manualSessionStartBtn.style.display = 'none';
+            manualSessionEndBtn.style.display = 'inline-flex';
+            manualSessionInfo.style.display = 'block';
+
+            // Send session start photo if available
+            if (sessionStartPhoto) {
+                await sendTelegramPhoto(sessionStartPhoto, "Manual Session Started!");
+            }
+            
+            // Send session start sticker
+            await sendTelegramSticker(sessionStartSticker);
+
+            const latestFetchedPeriod = fetchedData.length > 0 ? fetchedData[0].issueNumber : null;
+            if (latestFetchedPeriod) {
+                manualPeriodInput.value = incrementIssueNumber(latestFetchedPeriod);
+                updateTemplatePreviews();
+            }
+            
+            startManualUpdateTimer();
+            showNotification('Manual prediction session started!', 'success');
+        }
+
+        async function endManualSession() {
+            if (!isManualSessionActive) return;
+            isManualSessionActive = false;
+            manualSessionStartBtn.style.display = 'inline-flex';
+            manualSessionEndBtn.style.display = 'none';
+            manualSessionInfo.style.display = 'none';
+            clearInterval(manualUpdateTimer);
+            
+            // Send session end sticker
+            await sendTelegramSticker(sessionEndSticker);
+            
+            // Send session end photo if available
+            if (sessionEndPhoto) {
+                await sendTelegramPhoto(sessionEndPhoto, "Manual Session Ended!");
+            }
+            
+            // Send session end content if configured
+            if (sessionEndContent) {
+                await sendTelegramPlainMessage(sessionEndContent);
+            }
+            
+            showNotification('Manual prediction session ended.', 'info');
+        }
+
+        async function sendTelegramMessage(prediction) {
+            if (!telegramSettings.botToken || !telegramSettings.channelId) return;
+
+            const message = telegramSettings.messageTemplate
+                .replace('{issueNumber}', prediction.issueNumber.slice(-4))
+                .replace('{size}', prediction.sizePrediction)
+                .replace('{number}', prediction.numberPrediction);
+
+            const telegramApiUrl = `https://api.telegram.org/bot${telegramSettings.botToken}/sendMessage`;
+            try {
+                const response = await fetch(telegramApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: telegramSettings.channelId, text: message })
+                });
+                const data = await response.json();
+                if (data.ok) {
+                    showNotification('Prediction sent to Telegram successfully', 'success');
+                } else {
+                    showNotification(`Telegram API Error: ${data.description}`, 'error');
+                    console.error('Telegram API Error:', data);
+                }
+            } catch (error) {
+                showNotification('Failed to send prediction to Telegram', 'error');
+                console.error('Network error sending message to Telegram:', error);
+            }
+        }
+        
+        // Send sticker to Telegram
+        async function sendTelegramSticker(stickerId) {
+            if (!telegramSettings.botToken || !telegramSettings.channelId) return;
+
+            const telegramApiUrl = `https://api.telegram.org/bot${telegramSettings.botToken}/sendSticker`;
+            try {
+                const response = await fetch(telegramApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        chat_id: telegramSettings.channelId, 
+                        sticker: stickerId 
+                    })
+                });
+                const data = await response.json();
+                if (!data.ok) {
+                    console.error('Telegram API Error:', data);
+                }
+            } catch (error) {
+                console.error('Network error sending sticker to Telegram:', error);
+            }
+        }
+        
+        // Send photo to Telegram
+        async function sendTelegramPhoto(photoData, caption = "") {
+            if (!telegramSettings.botToken || !telegramSettings.channelId) return;
+
+            // Convert base64 to blob
+            const blob = await fetch(photoData).then(res => res.blob());
+            
+            const formData = new FormData();
+            formData.append('chat_id', telegramSettings.channelId);
+            formData.append('photo', blob);
+            formData.append('caption', caption);
+
+            const telegramApiUrl = `https://api.telegram.org/bot${telegramSettings.botToken}/sendPhoto`;
+            try {
+                const response = await fetch(telegramApiUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (!data.ok) {
+                    console.error('Telegram API Error:', data);
+                }
+            } catch (error) {
+                console.error('Network error sending photo to Telegram:', error);
+            }
+        }
+        
+        // Get random animation sticker
+        function getRandomAnimationSticker() {
+            return animationStickers[Math.floor(Math.random() * animationStickers.length)];
+        }
+        
+        // Get random video sticker
+        function getRandomVideoSticker() {
+            return videoStickers[Math.floor(Math.random() * videoStickers.length)];
+        }
+
+        function toggleScheduledMessages() {
+            isScheduledMessagesActive = !isScheduledMessagesActive;
+            if (isScheduledMessagesActive) {
+                toggleScheduledBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Scheduled Messages';
+                toggleScheduledBtn.classList.remove('btn-primary');
+                toggleScheduledBtn.classList.add('btn-danger');
+                scheduledMessagesTimer = setInterval(checkScheduledMessages, 1000);
+                showNotification('Scheduled messages activated!', 'success');
+            } else {
+                toggleScheduledBtn.innerHTML = '<i class="fas fa-clock"></i> Start Scheduled Messages';
+                toggleScheduledBtn.classList.remove('btn-danger');
+                toggleScheduledBtn.classList.add('btn-primary');
+                clearInterval(scheduledMessagesTimer);
+                showNotification('Scheduled messages stopped.', 'info');
+            }
+        }
+
+        async function checkScheduledMessages() {
+            const now = new Date();
+            const currentMinute = now.getMinutes();
+            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(currentMinute).padStart(2, '0')}`;
+            
+            if (currentMinute !== lastSentMinute) {
+                sentMessagesForMinute = {};
+                lastSentMinute = currentMinute;
+            }
+
+            const scheduledTimes = document.querySelectorAll('.scheduled-time');
+            for (let i = 0; i < scheduledTimes.length; i++) {
+                const timeInput = scheduledTimes[i];
+                const timeValue = timeInput.value;
+                
+                if (timeValue === currentTime && !sentMessagesForMinute[timeValue]) {
+                    sentMessagesForMinute[timeValue] = true;
+                    
+                    const messageText = document.getElementById(`scheduled-message-${i + 1}`).value;
+                    
+                    if (messageText) {
+                        await sendTelegramPlainMessage(messageText);
+                    }
+                }
+            }
+        }
+
+        async function sendTelegramPlainMessage(message) {
+            if (!telegramSettings.botToken || !telegramSettings.channelId) {
+                showNotification('Telegram settings not configured.', 'warning');
+                return;
+            }
+            const telegramApiUrl = `https://api.telegram.org/bot${telegramSettings.botToken}/sendMessage`;
+            try {
+                const response = await fetch(telegramApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: telegramSettings.channelId, text: message })
+                });
+                const data = await response.json();
+                if (data.ok) {
+                    showNotification('Scheduled message sent successfully', 'success');
+                } else {
+                    showNotification(`Telegram API Error: ${data.description}`, 'error');
+                }
+            } catch (error) {
+                showNotification('Failed to send scheduled message', 'error');
+            }
+        }
+
+        function toggleTimingSessions() {
+            isTimingSessionsActive = !isTimingSessionsActive;
+            if (isTimingSessionsActive) {
+                toggleTimingSessionsBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Timing Sessions';
+                toggleTimingSessionsBtn.classList.remove('btn-primary');
+                toggleTimingSessionsBtn.classList.add('btn-danger');
+                timingSessionsTimer = setInterval(checkTimingSessions, 1000);
+                showNotification('Auto timing sessions activated!', 'success');
+            } else {
+                toggleTimingSessionsBtn.innerHTML = '<i class="fas fa-clock"></i> Start Timing Sessions';
+                toggleTimingSessionsBtn.classList.remove('btn-danger');
+                toggleTimingSessionsBtn.classList.add('btn-primary');
+                clearInterval(timingSessionsTimer);
+                showNotification('Auto timing sessions stopped.', 'info');
+            }
+        }
+
+        async function checkTimingSessions() {
+            const now = new Date();
+            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            const timingTimes = document.querySelectorAll('.timing-time-input');
+            for (const timeInput of timingTimes) {
+                const timeValue = timeInput.value;
+                if (timeValue === currentTime && !isAutoSessionActive) {
+                    await startAutoSession();
+                    return;
+                }
+            }
+        }
+
+        function saveTelegramSettings() {
+            const botToken = document.getElementById('bot-token').value;
+            const channelId = document.getElementById('channel-id').value;
+            const messageTemplate = document.getElementById('message-template').value;
+            if (!botToken || !channelId) {
+                showNotification('Please enter both Bot Token and Channel ID', 'error');
+                return;
+            }
+
+            telegramSettings.botToken = botToken;
+            telegramSettings.channelId = channelId;
+            telegramSettings.messageTemplate = messageTemplate;
+
+            saveSettingsToLocalStorage();
+            showNotification('Telegram settings saved successfully', 'success');
+        }
+        
+        function saveStickerSettings() {
+            // Update animation stickers
+            for (let i = 1; i <= 10; i++) {
+                animationStickers[i-1] = document.getElementById(`animation-sticker-${i}`).value;
+            }
+            
+            // Update video stickers
+            for (let i = 1; i <= 10; i++) {
+                videoStickers[i-1] = document.getElementById(`video-sticker-${i}`).value;
+            }
+            
+            // Update loss sticker
+            lossSticker = document.getElementById('loss-sticker').value;
+            
+            saveSettingsToLocalStorage();
+            showNotification('Sticker settings saved successfully', 'success');
+        }
+        
+        function saveSessionStickerSettings() {
+            // Update session stickers and content
+            sessionStartSticker = document.getElementById('session-start-sticker').value;
+            sessionEndSticker = document.getElementById('session-end-sticker').value;
+            sessionEndContent = document.getElementById('session-end-content').value;
+            
+            saveSettingsToLocalStorage();
+            showNotification('Session sticker settings saved successfully', 'success');
+        }
+
+        function saveSettingsToLocalStorage() {
+            const settingsToSave = {
+                botToken: telegramSettings.botToken,
+                channelId: telegramSettings.channelId,
+                messageTemplate: telegramSettings.messageTemplate,
+                manualMessageTemplate: manualMessageTemplate,
+                animationStickers: animationStickers,
+                videoStickers: videoStickers,
+                lossSticker: lossSticker,
+                sessionStartSticker: sessionStartSticker,
+                sessionEndSticker: sessionEndSticker,
+                sessionEndContent: sessionEndContent,
+                sessionStartPhoto: sessionStartPhoto,
+                sessionEndPhoto: sessionEndPhoto,
+                calculationMode: calculationMode
+            };
+            localStorage.setItem('telegram_settings', JSON.stringify(settingsToSave));
+            localStorage.setItem('fetched_data', JSON.stringify(fetchedData));
+            localStorage.setItem('predictions', JSON.stringify(predictions));
+        }
+
+        function loadSavedData() {
+            const savedSettings = localStorage.getItem('telegram_settings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                telegramSettings.botToken = settings.botToken || '';
+                telegramSettings.channelId = settings.channelId || '';
+                telegramSettings.messageTemplate = settings.messageTemplate || 'PERIOD ➪ {issueNumber}\nRESULT ➪ {size} / {number}';
+                manualMessageTemplate = settings.manualMessageTemplate || 'PERIOD ➪ {issueNumber}\nRESULT ➪ {size} / {number}';
+                
+                // Load sticker settings if available
+                if (settings.animationStickers) {
+                    animationStickers = settings.animationStickers;
+                    for (let i = 1; i <= 10; i++) {
+                        document.getElementById(`animation-sticker-${i}`).value = animationStickers[i-1];
+                    }
+                }
+                
+                if (settings.videoStickers) {
+                    videoStickers = settings.videoStickers;
+                    for (let i = 1; i <= 10; i++) {
+                        document.getElementById(`video-sticker-${i}`).value = videoStickers[i-1];
+                    }
+                }
+                
+                if (settings.lossSticker) {
+                    lossSticker = settings.lossSticker;
+                    document.getElementById('loss-sticker').value = lossSticker;
+                }
+                
+                // Load session sticker settings if available
+                if (settings.sessionStartSticker) {
+                    sessionStartSticker = settings.sessionStartSticker;
+                    document.getElementById('session-start-sticker').value = sessionStartSticker;
+                }
+                
+                if (settings.sessionEndSticker) {
+                    sessionEndSticker = settings.sessionEndSticker;
+                    document.getElementById('session-end-sticker').value = sessionEndSticker;
+                }
+                
+                if (settings.sessionEndContent) {
+                    sessionEndContent = settings.sessionEndContent;
+                    document.getElementById('session-end-content').value = sessionEndContent;
+                }
+                
+                // Load photos if available
+                if (settings.sessionStartPhoto) {
+                    sessionStartPhoto = settings.sessionStartPhoto;
+                    const img = document.createElement('img');
+                    img.src = sessionStartPhoto;
+                    sessionStartPhotoPreview.innerHTML = '';
+                    sessionStartPhotoPreview.appendChild(img);
+                }
+                
+                if (settings.sessionEndPhoto) {
+                    sessionEndPhoto = settings.sessionEndPhoto;
+                    const img = document.createElement('img');
+                    img.src = sessionEndPhoto;
+                    sessionEndPhotoPreview.innerHTML = '';
+                    sessionEndPhotoPreview.appendChild(img);
+                }
+                
+                // Load calculation mode
+                if (settings.calculationMode) {
+                    calculationMode = settings.calculationMode;
+                    const modeOption = document.querySelector(`.mode-option[data-mode="${calculationMode}"]`);
+                    if (modeOption) {
+                        modeOptions.forEach(opt => opt.classList.remove('active'));
+                        modeOption.classList.add('active');
+                        
+                        if (calculationMode === 'sasta') {
+                            sastaDescription.style.display = 'block';
+                            deepDescription.style.display = 'none';
+                            sastaStatus.textContent = 'Active';
+                            deepStatus.textContent = 'Inactive';
+                        } else {
+                            sastaDescription.style.display = 'none';
+                            deepDescription.style.display = 'block';
+                            sastaStatus.textContent = 'Inactive';
+                            deepStatus.textContent = 'Active';
+                        }
+                    }
+                }
+                
+                document.getElementById('bot-token').value = telegramSettings.botToken;
+                document.getElementById('channel-id').value = telegramSettings.channelId;
+                document.getElementById('message-template').value = telegramSettings.messageTemplate;
+                document.getElementById('manual-message-template').value = manualMessageTemplate;
+            }
+            const savedFetchedData = localStorage.getItem('fetched_data');
+            if (savedFetchedData) {
+                fetchedData = JSON.parse(savedFetchedData);
+                updateFetchedDataTable();
+            }
+            const savedPredictions = localStorage.getItem('predictions');
+            if (savedPredictions) {
+                predictions = JSON.parse(savedPredictions);
+                updatePredictionHistoryTable();
+                const currentPrediction = predictions.find(p => p.result === null);
+                if (currentPrediction) {
+                    updatePredictionUI(currentPrediction);
+                }
+            }
+        }
+
+        function showNotification(message, type) {
+            notificationMessage.textContent = message;
+            notification.className = `notification ${type} show`;
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function clearPredictionData() {
+            predictions = [];
+            updatePredictionHistoryTable();
+            updateStats();
+            localStorage.removeItem('predictions');
+            showNotification('Prediction data cleared successfully', 'success');
+        }
+
+        function clearFetchedData() {
+            fetchedData = [];
+            updateFetchedDataTable();
+            localStorage.removeItem('fetched_data');
+            showNotification('Fetched data cleared successfully', 'success');
+        }
+
+        // Persist data every minute
+        setInterval(() => {
+            saveSettingsToLocalStorage();
+        }, 60000);
+
+        // Draggable pop-up function
+        function makeDraggable(element) {
+            let isDragging = false;
+            let offsetX, offsetY;
+
+            element.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                offsetX = e.clientX - element.offsetLeft;
+                offsetY = e.clientY - element.offsetTop;
+                element.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                let newX = e.clientX - offsetX;
+                let newY = e.clientY - offsetY;
+                
+                const maxX = window.innerWidth - element.offsetWidth;
+                const maxY = window.innerHeight - element.offsetHeight;
+                
+                newX = Math.min(Math.max(0, newX), maxX);
+                newY = Math.min(Math.max(0, newY), maxY);
+
+                element.style.left = `${newX}px`;
+                element.style.top = `${newY}px`;
+                element.style.right = 'auto';
+                element.style.bottom = 'auto';
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                element.style.cursor = 'move';
+            });
+        }
+    </script>
+</body>
+</html>

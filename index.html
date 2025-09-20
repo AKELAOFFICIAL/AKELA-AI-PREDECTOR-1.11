@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base Styles */
+    :root {
+      --primary: #4361ee;
+      --secondary: #3f37c9;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --warning: #f8961e;
+      --info: #4895ef;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 0 15px;
+    }
+
+    /* Login Card Styles */
+    .login-card {
+      background-color: var(--white);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      text-align: center;
+    }
+
+    .logo {
+      margin-bottom: 20px;
+    }
+
+    .logo img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .login-header {
+      margin-bottom: 25px;
+    }
+
+    .login-header h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+
+    .login-header p {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    .password-container {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--gray);
+      padding: 4px;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Button Styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--secondary);
+    }
+
+    /* Result Message */
+    .form-result {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .form-result.success {
+      background-color: rgba(76, 201, 240, 0.2);
+      color: var(--success);
+    }
+
+    .form-result.error {
+      background-color: rgba(247, 37, 133, 0.2);
+      color: var(--danger);
+    }
+
+    /* Maintenance Mode Warning */
+    .maintenance-warning {
+      background-color: var(--warning);
+      color: var(--dark);
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="maintenanceWarning" class="maintenance-warning" style="display: none;">
+      <i class="fas fa-exclamation-triangle"></i> Site is currently in Maintenance Mode. Login might be affected.
+    </div>
+    
+    <div class="login-card">
+      <div class="logo">
+        <img src="logo.png" alt="Logo">
+      </div>
+      
+      <div class="login-header">
+        <h1>User Login</h1>
+        <p>Enter your credentials to access your account</p>
+      </div>
+      
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username" class="label">Username</label>
+          <input type="text" id="username" class="form-control" placeholder="Enter your username" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password" class="label">Password</label>
+          <div class="password-container">
+            <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+            <button type="button" class="toggle-password">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        
+        <div id="result" class="form-result"></div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { db } from "./firebase-config.js";
+    import { ref, onValue, get } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
+    // Toggle password visibility
+    const togglePassword = document.querySelector('.toggle-password');
+    const passwordInput = document.getElementById('password');
+
+    togglePassword.addEventListener('click', () => {
+      const icon = togglePassword.querySelector('i');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    });
+
+    // Login form
+    const loginForm = document.getElementById('loginForm');
+    const resultEl = document.getElementById('result');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      
+      if (!username || !password) {
+        showResult('Please enter both username and password', 'error');
+        return;
+      }
+
+      try {
+        // Check if user exists in database
+        const userRef = ref(db, `userinfo/${username}`);
+        const snapshot = await get(userRef);
+        
+        if (!snapshot.exists()) {
+          showResult('Invalid username or password', 'error');
+          return;
+        }
+        
+        const userData = snapshot.val();
+        
+        // Check if password matches
+        if (userData.password !== password) {
+          showResult('Invalid username or password', 'error');
+          return;
+        }
+        
+        // Check if account is active
+        if (userData.status !== 'active') {
+          showResult('Your account is not active. Please contact administrator.', 'error');
+          return;
+        }
+        
+        // Check if account is still valid
+        if (userData.validity) {
+          const validityDate = parseValidityDate(userData.validity);
+          if (validityDate < new Date()) {
+            showResult('Your account has expired. Please contact administrator.', 'error');
+            return;
+          }
+        }
+        
+        // Login successful
+        showResult('Login successful! Redirecting...', 'success');
+        
+        // Store user session (you can use localStorage or sessionStorage)
+        localStorage.setItem('user', JSON.stringify({
+          username: username,
+          ...userData
+        }));
+        
+        // Redirect to user dashboard (you'll need to create this page)
+        setTimeout(() => {
+          window.location.href = 'user-dashboard.html';
+        }, 1500);
+        
+      } catch (error) {
+        showResult('Error: ' + error.message, 'error');
+      }
+    });
+
+    function parseValidityDate(dateString) {
+      // Parse date in format "DD-MM-YYYY HH:MM"
+      const [datePart, timePart] = dateString.split(' ');
+      const [day, month, year] = datePart.split('-');
+      const [hours, minutes] = timePart.split(':');
+      
+      return new Date(year, month - 1, day, hours, minutes);
+    }
+
+    function showResult(message, type) {
+      resultEl.textContent = message;
+      resultEl.className = `form-result ${type}`;
+      setTimeout(() => {
+        if (type !== 'success') { // Don't clear success messages immediately as they redirect
+          resultEl.textContent = '';
+          resultEl.className = 'form-result';
+        }
+      }, 3000);
+    }
+
+    // Maintenance mode warning
+    const maintenanceWarning = document.getElementById('maintenanceWarning');
+    const settingsRef = ref(db, 'settings/maintenanceMode');
+    onValue(settingsRef, (snapshot) => {
+      const inMaintenance = snapshot.val();
+      if (inMaintenance) {
+        maintenanceWarning.style.display = 'block';
+      } else {
+        maintenanceWarning.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
